@@ -1,0 +1,287 @@
+{
+  "info": {
+    "name": "AI Smart Crosswalk — Manual QA",
+    "description": "Manual API test collection for the AI Smart Crosswalk backend. Each request maps to a TC-NNN in ../test-cases/test-cases.md. Set the collection variables baseUrl, crosswalkId, alertId, cameraId, ledId before running. Requests whose name starts with [BUG-NNN] document a known defect found by code analysis.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000/api" },
+    { "key": "crosswalkId", "value": "PUT_A_REAL_CROSSWALK_ID" },
+    { "key": "alertId", "value": "PUT_A_REAL_ALERT_ID" },
+    { "key": "cameraId", "value": "PUT_A_REAL_CAMERA_ID" },
+    { "key": "ledId", "value": "PUT_A_REAL_LED_ID" },
+    { "key": "missingId", "value": "64b0000000000000000000ff" }
+  ],
+  "item": [
+    {
+      "name": "Alerts",
+      "item": [
+        {
+          "name": "TC-001 List alerts (default pagination)",
+          "request": { "method": "GET", "url": "{{baseUrl}}/alerts" }
+        },
+        {
+          "name": "TC-002 Get alert by valid id",
+          "request": { "method": "GET", "url": "{{baseUrl}}/alerts/{{alertId}}" }
+        },
+        {
+          "name": "TC-003 Malformed id -> 400",
+          "request": { "method": "GET", "url": "{{baseUrl}}/alerts/123" }
+        },
+        {
+          "name": "TC-004 Missing id -> 404",
+          "request": { "method": "GET", "url": "{{baseUrl}}/alerts/{{missingId}}" }
+        },
+        {
+          "name": "TC-005 Create alert (explicit HIGH) -> 201",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"dangerLevel\": \"HIGH\",\n  \"imageUrl\": \"https://example.com/p.jpg\"\n}" },
+            "url": "{{baseUrl}}/alerts"
+          }
+        },
+        {
+          "name": "TC-006 [BUG-002] Invalid enum -> expect 400 (actual 500)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"dangerLevel\": \"EXTREME\"\n}" },
+            "url": "{{baseUrl}}/alerts"
+          }
+        },
+        {
+          "name": "TC-007 Derive danger from confidence (0.70 -> HIGH)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"confidence\": 0.70\n}" },
+            "url": "{{baseUrl}}/alerts"
+          }
+        },
+        {
+          "name": "TC-008 Explicit overrides confidence -> LOW",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"dangerLevel\": \"LOW\",\n  \"confidence\": 0.95\n}" },
+            "url": "{{baseUrl}}/alerts"
+          }
+        },
+        {
+          "name": "TC-009 Pagination page=2 limit=5",
+          "request": { "method": "GET", "url": "{{baseUrl}}/alerts?page=2&limit=5" }
+        },
+        {
+          "name": "TC-010 Page beyond range -> empty",
+          "request": { "method": "GET", "url": "{{baseUrl}}/alerts?page=999&limit=10" }
+        },
+        {
+          "name": "TC-011 [BUG-004] Negative page -> expect graceful (actual 500)",
+          "request": { "method": "GET", "url": "{{baseUrl}}/alerts?page=-1&limit=10" }
+        },
+        {
+          "name": "TC-013 Filter by danger level",
+          "request": { "method": "GET", "url": "{{baseUrl}}/alerts?dangerLevel=HIGH" }
+        },
+        {
+          "name": "TC-015 Alert stats",
+          "request": { "method": "GET", "url": "{{baseUrl}}/alerts/stats" }
+        },
+        {
+          "name": "TC-016 Update alert",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"dangerLevel\": \"LOW\"\n}" },
+            "url": "{{baseUrl}}/alerts/{{alertId}}"
+          }
+        },
+        {
+          "name": "TC-017 Delete alert",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/alerts/{{alertId}}" }
+        }
+      ]
+    },
+    {
+      "name": "Crosswalks",
+      "item": [
+        {
+          "name": "TC-018 Create crosswalk (valid)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"location\": { \"city\": \"Haifa\", \"street\": \"Herzl\", \"number\": \"10\" }\n}" },
+            "url": "{{baseUrl}}/crosswalks"
+          }
+        },
+        {
+          "name": "TC-019 Missing location fields -> 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"location\": { \"city\": \"Haifa\" }\n}" },
+            "url": "{{baseUrl}}/crosswalks"
+          }
+        },
+        {
+          "name": "TC-020 Search empty -> 400",
+          "request": { "method": "GET", "url": "{{baseUrl}}/crosswalks/search" }
+        },
+        {
+          "name": "TC-021 Search 1 char -> 400",
+          "request": { "method": "GET", "url": "{{baseUrl}}/crosswalks/search?q=a" }
+        },
+        {
+          "name": "TC-022 Search 2 chars -> 200",
+          "request": { "method": "GET", "url": "{{baseUrl}}/crosswalks/search?q=He" }
+        },
+        {
+          "name": "TC-023 [BUG-001] Search regex metachar -> expect not 500",
+          "request": { "method": "GET", "url": "{{baseUrl}}/crosswalks/search?q=((" }
+        },
+        {
+          "name": "TC-024 Get crosswalk by id",
+          "request": { "method": "GET", "url": "{{baseUrl}}/crosswalks/{{crosswalkId}}" }
+        },
+        {
+          "name": "TC-025 Crosswalk alert stats",
+          "request": { "method": "GET", "url": "{{baseUrl}}/crosswalks/{{crosswalkId}}/stats" }
+        },
+        {
+          "name": "TC-026 Crosswalk alerts filtered",
+          "request": { "method": "GET", "url": "{{baseUrl}}/crosswalks/{{crosswalkId}}/alerts?dangerLevel=high" }
+        },
+        {
+          "name": "TC-027 [BUG-005] Invalid date filter -> expect not 500",
+          "request": { "method": "GET", "url": "{{baseUrl}}/crosswalks/{{crosswalkId}}/alerts?startDate=not-a-date" }
+        },
+        {
+          "name": "TC-028 Link camera",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"cameraId\": \"{{cameraId}}\"\n}" },
+            "url": "{{baseUrl}}/crosswalks/{{crosswalkId}}/camera"
+          }
+        },
+        {
+          "name": "TC-029 Link missing camera -> 404",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"cameraId\": \"{{missingId}}\"\n}" },
+            "url": "{{baseUrl}}/crosswalks/{{crosswalkId}}/camera"
+          }
+        },
+        {
+          "name": "TC-030 Link without cameraId -> 400",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{}" },
+            "url": "{{baseUrl}}/crosswalks/{{crosswalkId}}/camera"
+          }
+        },
+        {
+          "name": "TC-031 Unlink camera",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/crosswalks/{{crosswalkId}}/camera" }
+        }
+      ]
+    },
+    {
+      "name": "Cameras",
+      "item": [
+        {
+          "name": "TC-033 Create camera (valid)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"active\"\n}" },
+            "url": "{{baseUrl}}/cameras"
+          }
+        },
+        {
+          "name": "TC-034 [BUG-003] Create camera invalid status -> expect 400 (actual 500)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"broken\"\n}" },
+            "url": "{{baseUrl}}/cameras"
+          }
+        },
+        {
+          "name": "TC-035 Update status -> inactive",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"inactive\"\n}" },
+            "url": "{{baseUrl}}/cameras/{{cameraId}}/status"
+          }
+        },
+        {
+          "name": "TC-036 Update status invalid -> 400",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"on\"\n}" },
+            "url": "{{baseUrl}}/cameras/{{cameraId}}/status"
+          }
+        },
+        {
+          "name": "TC-037 Delete linked camera -> 400",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/cameras/{{cameraId}}" }
+        }
+      ]
+    },
+    {
+      "name": "LEDs",
+      "item": [
+        {
+          "name": "TC-039 Create LED",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{}" },
+            "url": "{{baseUrl}}/leds"
+          }
+        },
+        {
+          "name": "TC-040 LED command invalid state -> 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"state\": \"PURPLE\"\n}" },
+            "url": "{{baseUrl}}/leds/{{ledId}}/command"
+          }
+        },
+        {
+          "name": "TC-041 LED command no subscriber -> 400/504",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"state\": \"ON\"\n}" },
+            "url": "{{baseUrl}}/leds/{{ledId}}/command"
+          }
+        },
+        {
+          "name": "TC-042 Delete linked LED -> 400",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/leds/{{ledId}}" }
+        }
+      ]
+    },
+    {
+      "name": "System",
+      "item": [
+        {
+          "name": "TC-043 Health check",
+          "request": { "method": "GET", "url": "{{baseUrl}}/health" }
+        },
+        {
+          "name": "TC-044 Unknown route -> 404",
+          "request": { "method": "GET", "url": "{{baseUrl}}/does-not-exist" }
+        }
+      ]
+    }
+  ]
+}

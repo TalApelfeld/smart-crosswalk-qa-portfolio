@@ -1,0 +1,23 @@
+ID,Requirement,Category,Priority,Source
+REQ-001,"GET /api/alerts returns alerts paginated and sorted by timestamp desc with a pagination object; default limit 10",Functional,High,alertControllers.getAllAlerts
+REQ-002,"GET /api/alerts supports filtering by dangerLevel and crosswalkId",Functional,Medium,alertControllers.getAllAlerts
+REQ-003,"POST /api/alerts derives dangerLevel from confidence when omitted (>=0.7 HIGH, >=0.4 MEDIUM, else LOW; missing -> MEDIUM)",Business rule,High,utils/dangerLevel.js
+REQ-004,"Explicit dangerLevel overrides confidence-derived value",Business rule,Medium,alertControllers.createAlert
+REQ-005,"POST /api/alerts with location and no crosswalkId finds or creates the matching crosswalk and links the alert",Integration,Medium,alertControllers.findOrCreateCrosswalk
+REQ-006,"dangerLevel constrained to enum LOW|MEDIUM|HIGH; invalid values rejected as 400",Validation,High,models/Alert.js
+REQ-007,"Any :id route param must be a valid ObjectId; else 400 without DB hit",Validation,High,middleware/common/validateObjectId.js
+REQ-008,"Non-existent valid ID responds 404 with descriptive message",Functional,High,controllerHelpers.notFound
+REQ-009,"POST /api/crosswalks requires location.city/street/number; missing -> 400",Validation,High,middleware/crosswalks/validateCrosswalk.js
+REQ-010,"GET /api/crosswalks/search requires q length >= 2 matching city/street/number; invalid q -> 400 and must not crash",Functional,High,crosswalkControllers.searchCrosswalks
+REQ-011,"Camera status one of active|inactive|error on all write paths; invalid -> 400",Validation,High,models/Camera.js
+REQ-012,"Camera/LED linked to a crosswalk cannot be deleted; responds 400",Business rule,High,cameraControllers.deleteCamera
+REQ-013,"Crosswalk supports link/unlink camera and LED; linking missing device -> 404",Functional,Medium,crosswalkControllers.linkCamera
+REQ-014,"Deleting an alert with a Cloudinary imageUrl also removes the Cloudinary asset",Integration,Medium,alertControllers.deleteAlertById
+REQ-015,"POST /api/leds/:id/command requires state in {ON,OFF,BLINK}; delivers via Socket.IO; 504 on no ACK",Functional,Medium,ledControllers.sendLEDCommand
+REQ-016,"Creating an alert broadcasts alert:new to dashboard and crosswalk subscribers",Real-time,Medium,socket/emitAlertRealtime
+REQ-017,"Frontend toasts HIGH (error) and MEDIUM (warning) realtime alerts; LOW is silent",UI/Real-time,Medium,SocketBridge.jsx
+REQ-018,"Alerts page provides danger/search/date filters, correct empty states, and Load More pagination",UI,Medium,pages/Alerts.jsx
+REQ-019,"Dashboard System Status card reflects actual API/DB/YOLO health",UI/Non-functional,Medium,pages/Dashboard.jsx
+REQ-020,"GET /api/health reports live database connection state",Non-functional,Medium,backend/server.js
+REQ-021,"API returns status codes correctly distinguishing 4xx client errors from 5xx server errors",Non-functional,High,middleware/errorMiddleware.js
+REQ-022,"Pagination handles out-of-range and non-positive page/limit gracefully (no server error)",Robustness,Medium,controllerHelpers.parsePagination

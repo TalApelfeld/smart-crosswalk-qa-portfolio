@@ -1,0 +1,13 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Node (if anyone adds Newman/Postman tooling later)
+node_modules/
+npm-debug.log*
+
+# Local secrets — never commit real credentials
+*.env
+.env.local

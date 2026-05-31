@@ -1,0 +1,8 @@
+ID,Title,Severity,Priority,Status,FoundBy,Component,LinkedRequirement,LinkedTestCase
+BUG-001,Crosswalk search with regex metacharacters crashes with 500 (unsanitized RegExp),High,High,Open,Code analysis,crosswalkControllers.searchCrosswalks,REQ-010,TC-023
+BUG-002,Mongoose validation errors return HTTP 500 instead of 400,Medium,High,Open,Code analysis,middleware/errorMiddleware.js,REQ-021,TC-006
+BUG-003,POST /api/cameras skips status validation; invalid status returns 500,Medium,Medium,Open,Code analysis,routes/cameraRoutes.js,REQ-011,TC-034
+BUG-004,Negative page query parameter causes 500 (negative skip),Medium,Medium,Open,Code analysis,controllerHelpers.parsePagination,REQ-022,TC-011
+BUG-005,Invalid date in crosswalk alert filter causes 500 (Invalid Date cast),Medium,Medium,Open,Code analysis,crosswalkControllers.getCrosswalkAlerts,REQ-021,TC-027
+BUG-006,Dashboard System Status is hard-coded to healthy and never reflects real state,Medium,Medium,Open,Code analysis,frontend/pages/Dashboard.jsx,REQ-019,TC-049
+BUG-007,README API contract mismatch (alert-stats path; undocumented endpoints),Low,Low,Open,Code analysis,README.md,REQ-021,TC-050
