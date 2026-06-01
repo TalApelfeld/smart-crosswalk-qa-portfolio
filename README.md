@@ -1,45 +1,9 @@
-# QA Portfolio — AI Smart Crosswalk System
+# AI Smart Crosswalk System - QA
 
 **Manual QA engagement on a real, full-stack project.** This repository documents the
 requirements, test plan, manual test cases, traceability, and defects I produced while testing
 the **AI Smart Crosswalk System** — an AI-powered pedestrian-safety platform (computer-vision
 detection → danger grading → alerts → LED signal control).
-
-> **Why this exists:** I'm applying for a **Manual QA (R&D)** role. Rather than test a toy app,
-> I applied software-testing fundamentals to a genuine system I helped build, so every artifact
-> here reflects real engineering — real endpoints, real business rules, and real defects.
-
----
-
-## What this demonstrates (mapped to the role)
-| Role requirement | Where it's shown here |
-|------------------|------------------------|
-| Strong understanding of testing fundamentals | [`docs/test-strategy.md`](docs/test-strategy.md) — EP, BVA, decision tables, state transition, error guessing, applied to real features |
-| Manual testing methodology | [`docs/test-plan.md`](docs/test-plan.md) (IEEE-829), [`test-cases/`](test-cases/) — 50 detailed manual cases |
-| QA processes, test cases & bug reporting | [`test-cases/`](test-cases/), [`bug-reports/`](bug-reports/), [`traceability/rtm.md`](traceability/rtm.md) |
-| High attention to detail & analytical thinking | 7 defects found by reading source code, each with root cause + fix |
-| Communication | Clear, consistent, cross-linked documentation; everything traceable by ID |
-
-**Traceability is the spine of this portfolio:** every claim links to a `REQ-NNN`, `TC-NNN`, or
-`BUG-NNN`, and the [RTM](traceability/rtm.md) lets you walk from any requirement to its tests to
-its defects.
-
----
-
-## Headline results (design-time)
-- **22** testable requirements derived from the real codebase
-- **50** manual test cases (positive, negative, boundary, UI, non-functional)
-- **100%** requirement-to-test-case traceability
-- **7** defects identified via code analysis — including a **High** severity endpoint crash
-- Fully **reproducible**: Postman collection + curl commands + documented test data
-
-> **Honest scope:** this baseline is a **test-design + code-analysis** engagement. Test cases are
-> authored and ready to run (marked *Not Executed*); defects were found by source-code review and
-> are labeled *needs runtime confirmation*, each citing the exact file/line. No pass/fail
-> percentages are invented. See [`reports/test-summary-report.md`](reports/test-summary-report.md)
-> for the execution plan.
-
----
 
 ## The 7 defects at a glance
 | ID | Sev | Summary |
